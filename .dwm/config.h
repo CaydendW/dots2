@@ -30,8 +30,8 @@ static char *colors[][3] = {
 
 typedef struct
 {
-    const char *name;
-    const void *cmd;
+   const char *name;
+   const void *cmd;
 } Sp;
 
 const char *spcmd1[] = {"Shutup"}; // can't get rid of this
@@ -75,9 +75,9 @@ static const Layout layouts[] = {
 /* Key Definitions */
 #define MODKEY Mod4Mask
 
-#define TAGKEYS(KEY, TAG)                                                         \
-    {MODKEY | ShiftMask, KEY, view, {.ui = 1 << TAG}}, /*Move view to workspace*/ \
-        {MODKEY, KEY, tag, {.ui = 1 << TAG}},          /*Move window to workspace*/
+#define TAGKEYS(KEY, TAG)                                                        \
+   {MODKEY | ShiftMask, KEY, view, {.ui = 1 << TAG}}, /*Move view to workspace*/ \
+       {MODKEY, KEY, tag, {.ui = 1 << TAG}},          /*Move window to workspace*/
 
 #define STACKKEYS(MOD, ACTION) \ 
 {MOD,                                                                          \
@@ -90,10 +90,10 @@ static const Layout layouts[] = {
                                {MOD, XK_h, ACTION##stack, {.i = 0}},
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd)                                           \
-    {                                                        \
-        .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL } \
-    }
+#define SHCMD(cmd)                                         \
+   {                                                       \
+      .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL } \
+   }
 
 /* commands */
 static const char *termcmd[] = {TERMINAL, NULL};
@@ -197,6 +197,7 @@ static Key keys[] = {
     /* Misc */
     {MODKEY | ShiftMask, XK_space, togglefloating, {0}}, // Toggle floating window
     {MODKEY, XK_b, togglebar, {0}},                      // Toggle bar
+    {MODKEY, XK_p, spawn, SHCMD("scrot -s")},                   // Take a screenshot using scrot
 };
 
 /* button definitions */
