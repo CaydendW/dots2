@@ -1,12 +1,11 @@
 /* See LICENSE file fo copyright and license details. */
 
 /* Constants */
-#define TERMINAL "konsole"
-#define TERMCLASS "KONSOLE"
+#define TERMINAL "kitty"
 
 /* appearance */
 static unsigned int borderpx = 3; /* border pixel of windows */
-static unsigned int snap = 0;     /* snap pixel */
+static unsigned int snap = 3;     /* snap pixel */
 static unsigned int gappih = 35;  /* horiz inner gap between windows */
 static unsigned int gappiv = 35;  /* vert inner gap between windows */
 static unsigned int gappoh = 35;  /* horiz outer gap between windows and screen edge */
@@ -24,20 +23,20 @@ static char selbordercolor[] = "#4c2ca4";
 static char selbgcolor[] = "#1f132a";
 
 static char *colors[][3] = {
-    /*               fg           bg           border   */
+    /*            fg         bg         border   */
     [SchemeNorm] = {normfgcolor, normbgcolor, normbordercolor},
     [SchemeSel] = {selfgcolor, selbgcolor, selbordercolor},
 };
 
 typedef struct
 {
-   const char *name;
-   const void *cmd;
+    const char *name;
+    const void *cmd;
 } Sp;
 
 const char *spcmd1[] = {"Shutup"}; // can't get rid of this
 static Sp scratchpads[] = {
-    /* name          cmd  */
+    /* name        cmd  */
     {"spterm", spcmd1},
 };
 
@@ -46,10 +45,10 @@ static const char *tags[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
 static const Rule rules[] = {
     /* xprop(1):
-	 *	WM_CLASS(STRING) = instance, class
-	 *	WM_NAME(STRING) = title
-	*/
-    /* class    instance      title       	 tags mask    isfloating   isterminal  noswallow  monitor */
+*	WM_CLASS(STRING) = instance, class
+*	WM_NAME(STRING) = title
+*/
+    /* class   instance     title      	 tags mask   isfloating   isterminal  noswallow  monitor */
     {"leave me alone", NULL, NULL, 1 << 8, 0, 0, 0, -1},
 };
 
@@ -58,16 +57,16 @@ static float mfact = 0.55;  /* factor of master area size [0.05..0.95] */
 static int nmaster = 1;     /* number of clients in master area */
 static int resizehints = 1; /* 1 means respect size hints in tiled resizals */
 #define FORCE_VSPLIT 1      /* nrowgrid layout: force two clients to always split vertically */
+
 #include "vanitygaps.c"
+
 static const Layout layouts[] = {
-    /* symbol     arrange function */
+    /* symbol    arrange function */
     {"[]=", tile},   /* Default: Master on left, slaves on right */
     {"TTT", bstack}, /* Master on top, slaves on bottom */
 
     {"[@]", spiral},   /* Fibonacci spiral */
     {"[\\]", dwindle}, /* Decreasing in size right and leftward */
-
-    {"[M]", monocle}, /* All windows on top of eachother */
 
     {"><>", NULL}, /* no layout function means floating behavior */
     {NULL, NULL},
@@ -75,28 +74,33 @@ static const Layout layouts[] = {
 
 /* Key Definitions */
 #define MODKEY Mod4Mask
-#define TAGKEYS(KEY, TAG)                                         \
-   {MODKEY, KEY, view, {.ui = 1 << TAG}},                         \
-       {MODKEY | ControlMask, KEY, toggleview, {.ui = 1 << TAG}}, \
-       {MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}},          \
-       {MODKEY | ControlMask | ShiftMask, KEY, toggletag, {.ui = 1 << TAG}},
-#define STACKKEYS(MOD, ACTION)                      \
-   {MOD, XK_Down, ACTION##stack, {.i = INC(+1)}},   \
-       {MOD, XK_Up, ACTION##stack, {.i = INC(-1)}}, \
-       {MOD, XK_h, ACTION##stack, {.i = 0}},
+
+#define TAGKEYS(KEY, TAG)                                                         \
+    {MODKEY | ShiftMask, KEY, view, {.ui = 1 << TAG}}, /*Move view to workspace*/ \
+        {MODKEY, KEY, tag, {.ui = 1 << TAG}},          /*Move window to workspace*/
+
+#define STACKKEYS(MOD, ACTION) \ 
+{MOD,                                                                          \
+                               XK_Left,                                        \
+                               ACTION##stack,                                  \
+                               {.i = INC(+1)}},                                \
+                               {MOD, XK_Right, ACTION##stack, {.i = INC(-1)}}, \
+                               {MOD, XK_Down, ACTION##stack, {.i = INC(+1)}},  \
+                               {MOD, XK_Up, ACTION##stack, {.i = INC(-1)}},    \
+                               {MOD, XK_h, ACTION##stack, {.i = 0}},
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd)                                         \
-   {                                                       \
-      .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL } \
-   }
+#define SHCMD(cmd)                                           \
+    {                                                        \
+        .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL } \
+    }
 
 /* commands */
 static const char *termcmd[] = {TERMINAL, NULL};
 
 /*
- * Xresources preferences to load at startup
- */
+* Xresources preferences to load at startup
+*/
 ResourcePref resources[] = {
     {"color0", STRING, &normbordercolor},
     {"color8", STRING, &selbordercolor},
@@ -123,30 +127,41 @@ ResourcePref resources[] = {
 #include "shiftview.c"
 
 static Key keys[] = {
-    STACKKEYS(MODKEY, focus)
-        STACKKEYS(MODKEY | ShiftMask, push)
-            TAGKEYS(XK_1, 0)
-                TAGKEYS(XK_2, 1)
-                    TAGKEYS(XK_3, 2)
-                        TAGKEYS(XK_4, 3)
-                            TAGKEYS(XK_5, 4)
-                                TAGKEYS(XK_6, 5)
-                                    TAGKEYS(XK_7, 6)
-                                        TAGKEYS(XK_8, 7)
-                                            TAGKEYS(XK_9, 8){MODKEY, XK_0, view, {.ui = ~0}},
-
     /* The Basics */
-    {MODKEY, XK_q, killclient, {0}},                                                                       // Kill focussed window
-    {MODKEY, XK_Return, spawn, {.v = termcmd}},                                                            // Open Terminal
-    {MODKEY, XK_d, spawn, SHCMD("rofi -theme purps -show drun -icon-theme \"Numix circle\" -show-icons")}, // Launch rofi
-    {MODKEY | ShiftMask, XK_e, quit, {0}},                                                                 // Exit dwm
+    {MODKEY, XK_q, killclient, {0}},                                                                                         // Kill focussed window
+    {MODKEY, XK_Return, spawn, {.v = termcmd}},                                                                              // Open Terminal
+    {MODKEY, XK_d, spawn, SHCMD("rofi -modi drun,window -theme purps -icon-theme \"Numix Circle\" -show-icons -show drun")}, // Launch rofi
+    {MODKEY | ShiftMask, XK_e, quit, {0}},                                                                                   // Exit dwm
+
+    /* Workspace stuff */
+    TAGKEYS(XK_1, 0)                   // Move / Focus workspace 1
+    TAGKEYS(XK_2, 1)                   // Move / Focus workspace 2
+    TAGKEYS(XK_3, 2)                   // Move / Focus workspace 3
+    TAGKEYS(XK_4, 3)                   // Move / Focus workspace 4
+    TAGKEYS(XK_5, 4)                   // Move / Focus workspace 6
+    TAGKEYS(XK_6, 5)                   // Move / Focus workspace 7
+    TAGKEYS(XK_7, 6)                   // Move / Focus workspace 8
+    TAGKEYS(XK_8, 7)                   // Move / Focus workspace 9
+    TAGKEYS(XK_9, 8)                   // Move / Focus workspace 10
+    {MODKEY, XK_g, togglesticky, {0}}, // Make window sticky (Persist on all workspaces)
+
+    /* Scratchpad */
+    {MODKEY, XK_minus, scratchpad_show, {0}},             // Cycle scratchpad
+    {MODKEY | ShiftMask, XK_minus, scratchpad_hide, {0}}, // Send to scratchpad
+    {MODKEY, XK_equal, scratchpad_remove, {0}},           // Remove from scratchpad
+    {MODKEY, XK_0, view, {.ui = ~0}},                     // View scratchpad workspace
+
+    /* Moving of tiled windows */
+    STACKKEYS(MODKEY, push) // Move focused window
+
+    /* Chaning focus of tiled windows */
+    STACKKEYS(MODKEY | ShiftMask, focus) // Change focus
 
     /* Layouts */
     {MODKEY, XK_t, setlayout, {.v = &layouts[0]}},             // Tile
     {MODKEY | ShiftMask, XK_t, setlayout, {.v = &layouts[1]}}, // Bstack
     {MODKEY, XK_s, setlayout, {.v = &layouts[2]}},             // Spiral
     {MODKEY | ShiftMask, XK_s, setlayout, {.v = &layouts[3]}}, // Dwindle
-    {MODKEY, XK_m, setlayout, {.v = &layouts[5]}},             // Monocle
     {MODKEY, XK_f, togglefullscr, {0}},                        // Fullscreen
 
     /* Gaps */
@@ -155,29 +170,38 @@ static Key keys[] = {
     {MODKEY, XK_z, incrgaps, {.i = -3}},          // Decrease gaps
     {MODKEY | ShiftMask, XK_a, defaultgaps, {0}}, // Reset gaps
 
-    /* Resize of tiled windows */
-    {MODKEY, XK_Right, setmfact, {.f = +0.01}}, // Make window bigger
-    {MODKEY, XK_Left, setmfact, {.f = -0.01}},  // Make window smaller
+    /* Borders */
+    {MODKEY, XK_c, toggleborder, {0}},                  // Toggle borderping
+    {MODKEY | ShiftMask, XK_x, setborderpx, {.i = +1}}, // Increase border
+    {MODKEY | ShiftMask, XK_z, setborderpx, {.i = -1}}, // Decrease border
+    {MODKEY | ShiftMask, XK_c, setborderpx, {.i = 0}},  // Reset border (to 3)
 
-    /* Scratchpad */
-    {MODKEY, XK_minus, scratchpad_show, {0}},             // Cycle scratchpad
-    {MODKEY | ShiftMask, XK_minus, scratchpad_hide, {0}}, // Send to scratchpad
-    {MODKEY, XK_equal, scratchpad_remove, {0}},           // Remove from scratchpad
+    /* Resize of tiled windows */
+    {MODKEY | ControlMask, XK_Right, setmfact, {.f = +0.01}}, // Make master area bigger
+    {MODKEY | ControlMask, XK_Left, setmfact, {.f = -0.01}},  // Make master area smaller
+    {MODKEY | ControlMask, XK_Up, setmfact, {.f = +0.01}},    // Make master area bigger
+    {MODKEY | ControlMask, XK_Down, setmfact, {.f = -0.01}},  // Make master area smaller
+
+    /* Reset master area size */
+    {MODKEY | ControlMask | ShiftMask, XK_Right, setmfact, {.f = 1.55}}, // Reset master area size
+    {MODKEY | ControlMask | ShiftMask, XK_Up, setmfact, {.f = 1.55}},    // Reset master area size
+    {MODKEY | ControlMask | ShiftMask, XK_Down, setmfact, {.f = 1.55}},  // Reset master area size
+    {MODKEY | ControlMask | ShiftMask, XK_Left, setmfact, {.f = 1.55}},  // Reset master area size
 
     /* Controll of master pane(s) */
-    {MODKEY, XK_space, zoom, {0}},         // Send window to master
-    {MODKEY, XK_w, incnmaster, {.i = +1}}, // Add possible master window
-    {MODKEY, XK_e, incnmaster, {.i = -1}}, // Remove possible master window
+    {MODKEY, XK_space, zoom, {0}},                // Send window to master
+    {MODKEY, XK_w, incnmaster, {.i = +1}},        // Add possible master window
+    {MODKEY, XK_e, incnmaster, {.i = -1}},        // Remove possible master window
+    {MODKEY | ShiftMask, XK_w, resetmaster, {0}}, // Set amount of masters to default
 
     /* Misc */
-    {MODKEY, XK_b, togglebar, {0}},                      // Toggle bar
     {MODKEY | ShiftMask, XK_space, togglefloating, {0}}, // Toggle floating window
+    {MODKEY, XK_b, togglebar, {0}},                      // Toggle bar
 };
 
 /* button definitions */
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 static Button buttons[] = {
-/* click                event mask      button          function        argument */
 #ifndef __OpenBSD__
     {ClkWinTitle, 0, Button2, zoom, {0}},
     {ClkStatusText, 0, Button1, sigdwmblocks, {.i = 1}},

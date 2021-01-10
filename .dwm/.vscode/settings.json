@@ -1,0 +1,11 @@
+{
+   "C_Cpp.intelliSenseEngineFallback": "Enabled",
+   "files.associations": {
+      "*.tcc": "c",
+      "deque": "c",
+      "list": "c",
+      "string": "c",
+      "vector": "c",
+      "valarray": "c"
+   }
+}
