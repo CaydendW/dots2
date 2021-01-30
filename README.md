@@ -22,5 +22,3 @@ Web browser: qutebrowser
 Application launcher: rofi
 Editors: vim, Doom Emcas and VSCode
 Compositor: this brach of picom- https://github.com/tryone144/compton
-
-This time instead of i3, it uses dwm. i3 will now be unmaintained.
