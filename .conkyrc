@@ -7,6 +7,8 @@ conky.config = {
     own_window = true,
     own_window_class = 'Conky',
     own_window_transparent = yes,
+    background = false,
+    own_window_argb_visual= yes,
     background = yes,
     gap_y = 0,
     gap_x = -1,
@@ -22,5 +24,5 @@ conky.config = {
 }
 
 conky.text = [[
-${font Noto:size=13}${color dedede}${alignc}${time %I:%M %p}
+${font Noto:size=14}${color dedede}${alignc}${time %I:%M %p}
 ]]

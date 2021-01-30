@@ -68,6 +68,9 @@ static const Layout layouts[] = {
     {"[@]", spiral},   /* Fibonacci spiral */
     {"[\\]", dwindle}, /* Decreasing in size right and leftward */
 
+    {"|M|", centeredmaster},         /* Master in middle, slaves on sides */
+    {"|<M>|", centeredfloatingmaster}, /* Master in middle, slaves on sides but master floats*/
+
     {"><>", NULL}, /* no layout function means floating behavior */
     {NULL, NULL},
 };
@@ -80,14 +83,8 @@ static const Layout layouts[] = {
        {MODKEY, KEY, tag, {.ui = 1 << TAG}},          /*Move window to workspace*/
 
 #define STACKKEYS(MOD, ACTION) \ 
-{MOD,                                                                          \
-                               XK_Left,                                        \
-                               ACTION##stack,                                  \
-                               {.i = INC(+1)}},                                \
-                               {MOD, XK_Right, ACTION##stack, {.i = INC(-1)}}, \
-                               {MOD, XK_Down, ACTION##stack, {.i = INC(+1)}},  \
-                               {MOD, XK_Up, ACTION##stack, {.i = INC(-1)}},    \
-                               {MOD, XK_h, ACTION##stack, {.i = 0}},
+{MOD, XK_j, ACTION##stack,{.i = INC(+1)}},    \
+{MOD, XK_k, ACTION##stack, {.i = INC(-1)}},      \  
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd)                                         \
@@ -162,6 +159,8 @@ static Key keys[] = {
     {MODKEY | ShiftMask, XK_t, setlayout, {.v = &layouts[1]}}, // Bstack
     {MODKEY, XK_s, setlayout, {.v = &layouts[2]}},             // Spiral
     {MODKEY | ShiftMask, XK_s, setlayout, {.v = &layouts[3]}}, // Dwindle
+    {MODKEY, XK_r, setlayout, {.v = &layouts[4]}},             // Centered master
+    {MODKEY | ShiftMask, XK_r, setlayout, {.v = &layouts[5]}}, // Centered floating master
     {MODKEY, XK_f, togglefullscr, {0}},                        // Fullscreen
 
     /* Gaps */
@@ -177,16 +176,12 @@ static Key keys[] = {
     {MODKEY | ShiftMask, XK_c, setborderpx, {.i = 0}},  // Reset border (to 3)
 
     /* Resize of tiled windows */
-    {MODKEY | ControlMask, XK_Right, setmfact, {.f = +0.01}}, // Make master area bigger
-    {MODKEY | ControlMask, XK_Left, setmfact, {.f = -0.01}},  // Make master area smaller
-    {MODKEY | ControlMask, XK_Up, setmfact, {.f = +0.01}},    // Make master area bigger
-    {MODKEY | ControlMask, XK_Down, setmfact, {.f = -0.01}},  // Make master area smaller
+    {MODKEY | ControlMask, XK_j, setmfact, {.f = +0.01}}, // Make master area bigger
+    {MODKEY | ControlMask, XK_k, setmfact, {.f = -0.01}},  // Make master area smaller
 
     /* Reset master area size */
-    {MODKEY | ControlMask | ShiftMask, XK_Right, setmfact, {.f = 1.55}}, // Reset master area size
-    {MODKEY | ControlMask | ShiftMask, XK_Up, setmfact, {.f = 1.55}},    // Reset master area size
-    {MODKEY | ControlMask | ShiftMask, XK_Down, setmfact, {.f = 1.55}},  // Reset master area size
-    {MODKEY | ControlMask | ShiftMask, XK_Left, setmfact, {.f = 1.55}},  // Reset master area size
+    {MODKEY | ControlMask | ShiftMask, XK_j, setmfact, {.f = 1.55}}, // Reset master area size
+    {MODKEY | ControlMask | ShiftMask, XK_k, setmfact, {.f = 1.55}},    // Reset master area size
 
     /* Controll of master pane(s) */
     {MODKEY, XK_space, zoom, {0}},                // Send window to master
@@ -197,7 +192,6 @@ static Key keys[] = {
     /* Misc */
     {MODKEY | ShiftMask, XK_space, togglefloating, {0}}, // Toggle floating window
     {MODKEY, XK_b, togglebar, {0}},                      // Toggle bar
-    {MODKEY, XK_p, spawn, SHCMD("scrot -s")},                   // Take a screenshot using scrot
 };
 
 /* button definitions */
