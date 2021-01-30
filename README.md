@@ -21,4 +21,4 @@ Window manager: dwm
 Web browser: qutebrowser
 Application launcher: rofi
 Editors: vim, Doom Emcas and VSCode
-Compositor: this brach of picom- https://github.com/tryone144/compton
+Compositor: https://github.com/tryone144/compton
